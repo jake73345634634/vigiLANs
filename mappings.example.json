@@ -1,0 +1,56 @@
+{
+  "findings": {
+    "EXAMPLE_FINDING": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "log", "status", "nat", "schedule", "comment"]
+    },
+    "Overly Permissive Rule (Any Source, Any Destination, Any Service)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Source, Any Destination)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Source, Any Service)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Destination, Any Service)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Source)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Destination)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Service)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Rule without Comment": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Rule without Logging": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "log"]
+    },
+    "Disabled Rule": {
+      "columns": ["device", "id", "context", "name", "srcAddr", "dstAddr", "service", "action", "status", "comment"]
+    },
+    "Rule without Name": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Source Zone, Any Destination Zone)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Source Zone)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Overly Permissive Rule (Any Destination Zone)": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Insecure Service Permitted": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    },
+    "Duplicate Rule": {
+      "columns": ["device", "id", "context", "name", "srcZone", "dstZone", "srcAddr", "dstAddr", "service", "action", "comment"]
+    }
+  },
+  "ignored": []
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vigiLANs</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <div class="header-inner">
+                <div class="logo">
+                    <img class="logo-icon" src="{{ url_for('static', filename='img/logo.svg') }}" alt="vigiLANs">
+                    <span class="logo-text">vigiLANs</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-clear" id="btnClearDb">Clear Database</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Imports</div>
+                    <div class="sidebar-upload-cards" id="uploadCards"></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Data</div>
+                    <div class="sidebar-imports" id="importsList">
+                        <div class="sidebar-empty">No imports yet</div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-content" id="mainContent">
+                <div class="stats-bar" id="statsBar">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statTotal">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item" data-type="parsed">
+                            <div class="stat-dot"></div>
+                            <div class="stat-value" id="statParsed">0</div>
+                            <div class="stat-label">Parsed</div>
+                        </div>
+                        <div class="stat-item" data-type="unparsed">
+                            <div class="stat-dot"></div>
+                            <div class="stat-value" id="statUnparsed">0</div>
+                            <div class="stat-label">Unparsed</div>
+                        </div>
+                        <div class="stat-item" data-type="ignored">
+                            <div class="stat-dot"></div>
+                            <div class="stat-value" id="statIgnored">0</div>
+                            <div class="stat-label">Ignored</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-tabs" id="filterTabs">
+                    <select class="domain-filter" id="deviceFilter">
+                        <option value="all">All Devices</option>
+                    </select>
+                    <div class="filter-tabs-right">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="parsed">Parsed</button>
+                        <button class="filter-tab" data-filter="unparsed">Unparsed</button>
+                        <button class="filter-tab" data-filter="ignored">Ignored</button>
+                    </div>
+                </div>
+
+                <div class="results" id="results">
+                    <div class="empty-state">Upload firewall rules to get started</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+# Database
+vigilans.db
+*.db
+*.db-wal
+*.db-shm
+
+# Mappings (contains your custom finding definitions)
+mappings.json
+
+# Sample config data
+data/
+
+# Claude Code
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Environment variables / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
