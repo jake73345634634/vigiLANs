@@ -45,4 +45,4 @@ Issues not listed in `findings` will appear as unparsed. Issues listed in `ignor
 
 The `EXAMPLE_FINDING` entry defines the default columns shown in the "All Rules" view.
 
-See `mappings.json` for the structure.
+See `mappings.example.json` for the structure.
