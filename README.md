@@ -24,7 +24,6 @@ cd vigiLANs
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -e .
-cp mappings.example.json mappings.json
 flask --app vigilans.app:create_app run
 ```
 
@@ -34,7 +33,7 @@ Then open [http://localhost:5000](http://localhost:5000) in your browser.
 
 #### Mappings
 
-vigiLANs uses a `mappings.json` file at the project root to control how parser-generated issues are presented in the UI. Each entry maps an issue title to a finding with optional configuration:
+vigiLANs ships with a ready-to-use `mappings.json` in the repo, so it works out of the box. Edit that file to control how parser-generated issues are presented in the UI — it is read from the current working directory where you launch `flask run`, falling back to the project root. Each entry maps an issue title to a finding with optional configuration:
 
 - **`findingName`** — optional custom display name (defaults to the issue title)
 - **`columns`** — which columns to show in the rules table for this finding (defaults to all)
@@ -45,4 +44,4 @@ Issues not listed in `findings` will appear as unparsed. Issues listed in `ignor
 
 The `EXAMPLE_FINDING` entry defines the default columns shown in the "All Rules" view.
 
-See `mappings.example.json` for the structure.
+See `mappings.json` for the full structure.

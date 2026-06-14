@@ -1,7 +1,28 @@
 import json
 from pathlib import Path
 
-MAPPINGS_PATH = Path(__file__).resolve().parent.parent.parent / "mappings.json"
+# Project root for an editable / src-layout checkout: src/vigilans/mappings.py -> repo root
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+
+def _resolve_mappings_path() -> Path:
+    """Locate the repo's ``mappings.json``.
+
+    Looks in the current working directory first (where ``flask run`` is launched).
+    This is what makes a non-editable ``pip install .`` work: the app is run from the
+    cloned repo, which contains the tracked ``mappings.json``. Falls back to the project
+    root resolved relative to this file, which covers an editable / ``src``-layout
+    checkout run from any directory.
+    """
+    cwd_path = Path.cwd() / "mappings.json"
+    if cwd_path.is_file():
+        return cwd_path
+    return _PROJECT_ROOT / "mappings.json"
+
+
+# Resolved at import for callers/tests that reference it; load_mappings() re-resolves
+# at call time so a mappings.json created later in the same process is still picked up.
+MAPPINGS_PATH = _resolve_mappings_path()
 
 ALL_COLUMNS = [
     "device", "id", "name", "context", "srcZone", "dstZone",
@@ -11,7 +32,7 @@ ALL_COLUMNS = [
 
 
 def load_mappings() -> dict:
-    with open(MAPPINGS_PATH) as f:
+    with open(_resolve_mappings_path()) as f:
         return json.load(f)
 
 

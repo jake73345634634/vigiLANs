@@ -4,9 +4,6 @@ vigilans.db
 *.db-wal
 *.db-shm
 
-# Mappings (contains your custom finding definitions)
-mappings.json
-
 # Sample config data
 data/
 

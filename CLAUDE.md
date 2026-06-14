@@ -18,12 +18,14 @@ pip install -e .
 flask --app vigilans.app:create_app run
 ```
 
+A plain non-editable `pip install .` also works: `templates/` and `static/` ship as package data (`[tool.setuptools.package-data]` in `pyproject.toml`), and the tracked `mappings.json` at the repo root is found via the current working directory when the app is launched from the cloned repo. Automated provisioning that runs `pip install .` then `flask run` from the repo (e.g. the Win11-Pentest autounattend build, which clones this repo and pip-installs it non-editable) depends on this.
+
 ## Project Structure
 
 ```
 vigiLANs/
 ├── pyproject.toml
-├── mappings.json                    # Finding definitions (user-editable, at root for easy access)
+├── mappings.json                    # Finding definitions (tracked; the active config the app reads)
 ├── vigilans.db                      # SQLite database (auto-created on first run)
 ├── CLAUDE.md
 ├── README.md
@@ -33,7 +35,7 @@ vigiLANs/
 │       ├── __init__.py
 │       ├── app.py                   # Flask app factory, 16 MB upload limit
 │       ├── db.py                    # SQLite connection, schema init, clear + migration
-│       ├── mappings.py              # Load mappings.json, classify findings, column definitions
+│       ├── mappings.py              # Resolve + load mappings.json (cwd → project root), classify findings, columns
 │       ├── parsers/
 │       │   ├── __init__.py          # Parser registry: PARSERS = {"fortigate": FortiGateParser()}
 │       │   ├── base.py              # BaseParser ABC + ParseResult/Rule dataclasses
@@ -263,6 +265,15 @@ When adding a new issue in `_analyze_rule()`, you MUST also:
 - `EXAMPLE_FINDING` — special entry that defines the default columns for the "All Rules" view
 - `ignored` — list of issue title strings to hide from the UI
 - Multiple parser issue titles can map to the same `findingName` to group related issues
+
+### File resolution
+
+`mappings.json` is tracked in the repo (not gitignored) so a fresh clone — including automated provisioning — always has it. `load_mappings()` resolves it at call time, in order:
+
+1. `mappings.json` in the **current working directory** (where `flask run` is launched). For a non-editable `pip install .`, this is what finds it: the app is run from the cloned repo, which contains the tracked file.
+2. `mappings.json` at the **project root** resolved relative to `mappings.py` (covers an editable / `src`-layout checkout run from any directory).
+
+There is no bundled copy, so launch `flask run` from the repo directory (or any directory containing a `mappings.json`).
 
 ### Column IDs (generic, not firewall-specific)
 

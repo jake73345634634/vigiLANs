@@ -15,3 +15,16 @@ dev = ["pytest"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Non-Python files that must ship inside the installed package. Without this,
+# a non-editable `pip install .` drops templates/static and the app fails at
+# runtime (TemplateNotFound, etc.). Globs are relative to src/vigilans/.
+# Add a line here whenever a new static/template subfolder appears.
+[tool.setuptools.package-data]
+vigilans = [
+    "templates/*",
+    "static/css/*",
+    "static/js/*",
+    "static/img/*",
+    "static/fonts/*",
+]
