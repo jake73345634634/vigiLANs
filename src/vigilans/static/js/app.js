@@ -3,6 +3,7 @@
 
     const TOOLS = [
         { slug: 'fortigate', name: 'FortiGate', icon: '\u{1F6E1}', accept: '.conf,.txt', hint: 'FortiGate rules (.conf, .txt)' },
+        { slug: 'juniper', name: 'Juniper', icon: '\u{1F6E1}', accept: '.conf,.txt', hint: 'Junos SRX config (.conf, .txt) — set or curly-brace' },
     ];
 
     const $ = (sel, ctx) => (ctx || document).querySelector(sel);
@@ -268,10 +269,17 @@
     const anySvc = r => (r.service.toUpperCase() === 'ALL' || r.service.toUpperCase() === 'ANY') && bad();
     const anySrcZone = r => (!r.srcZone || r.srcZone.toLowerCase() === 'any') && bad();
     const anyDstZone = r => (!r.dstZone || r.dstZone.toLowerCase() === 'any') && bad();
-    const insecureSvcs = new Set(['TELNET','FTP','TFTP','HTTP','RSH','RLOGIN','FINGER','TALK','IRC']);
-    const questionableSvcs = new Set(['SNMP','NFS','SMB','SAMBA','POP3','IMAP','SMTP']);
+    const insecureSvcs = new Set(['TELNET','FTP','FTP-DATA','TFTP','HTTP','RSH','RLOGIN','FINGER','TALK','IRC']);
+    const questionableSvcs = new Set(['SNMP','NFS','SMB','SAMBA','POP3','IMAP','SMTP','NETBIOS']);
+    // Insecure/questionable by resolved PROTO/port (e.g. Juniper expanded application values like TCP/23)
+    const insecurePorts = new Set(['TCP/23','TCP/21','TCP/20','UDP/69','TCP/80','TCP/514','TCP/513','TCP/79']);
+    const questionablePorts = new Set(['UDP/161','UDP/162','TCP/110','TCP/143','TCP/25','TCP/445','TCP/139','UDP/137','UDP/138','UDP/111','TCP/2049']);
     function svcSeverity(name) {
-        const u = name.trim().toUpperCase();
+        let u = name.trim().toUpperCase();
+        if (!u) return '';
+        if (insecurePorts.has(u)) return 'bad';
+        if (questionablePorts.has(u)) return 'warn';
+        if (u.startsWith('JUNOS-')) u = u.slice(6);  // Junos predefined application names (junos-telnet -> TELNET)
         if (insecureSvcs.has(u)) return 'bad';
         if (questionableSvcs.has(u)) return 'warn';
         return '';
@@ -288,9 +296,9 @@
         'Overly Permissive Rule (Any Source Zone)':                          { srcZone: anySrcZone },
         'Overly Permissive Rule (Any Destination Zone)':                     { dstZone: anyDstZone },
         'Insecure Service Permitted':                                        { service: r => {
-            const parts = r.service.split(',').map(s => s.trim().toUpperCase());
-            if (parts.some(s => insecureSvcs.has(s))) return 'bad';
-            if (parts.some(s => questionableSvcs.has(s))) return 'warn';
+            const sevs = r.service.split(',').map(s => svcSeverity(s));
+            if (sevs.includes('bad')) return 'bad';
+            if (sevs.includes('warn')) return 'warn';
             return '';
         }},
         'Duplicate Rule':                                                    {},

@@ -1,12 +1,12 @@
 # vigiLANs
 
-A Python Flask web application that audits firewall rules/ACLs. It parses firewall rule exports (currently FortiGate), extracts every rule, analyzes them for security issues, and presents findings in a web UI. Unlike grADus which classifies findings from other tools, vigiLANs **generates** findings from raw rule data.
+A Python Flask web application that audits firewall rules/ACLs. It parses firewall rule exports (currently FortiGate and Juniper Junos SRX), extracts every rule, analyzes them for security issues, and presents findings in a web UI. Unlike grADus which classifies findings from other tools, vigiLANs **generates** findings from raw rule data.
 
 ## Tech Stack
 
 - **Backend**: Python 3.11+, Flask 3.x
 - **Database**: SQLite (raw `sqlite3` via `get_db()`, no ORM)
-- **Rule parser**: Custom FortiGate rule parser (regex + state machine)
+- **Rule parsers**: Custom FortiGate parser (regex + state machine) and Juniper Junos SRX parser (handles both `set` and curly-brace formats)
 - **Frontend**: Vanilla JS SPA, dark theme only, no framework
 - **Fonts**: IBM Plex Sans / IBM Plex Mono (bundled locally in `static/fonts/`)
 - **Project tooling**: `pyproject.toml` with `src` layout
@@ -37,9 +37,10 @@ vigiLANs/
 │       ├── db.py                    # SQLite connection, schema init, clear + migration
 │       ├── mappings.py              # Resolve + load mappings.json (cwd → project root), classify findings, columns
 │       ├── parsers/
-│       │   ├── __init__.py          # Parser registry: PARSERS = {"fortigate": FortiGateParser()}
+│       │   ├── __init__.py          # Parser registry: PARSERS = {"fortigate": ..., "juniper": ...}
 │       │   ├── base.py              # BaseParser ABC + ParseResult/Rule dataclasses
-│       │   └── fortigate.py         # FortiGate rule parser (rules, groups, addresses, VIPs, services)
+│       │   ├── fortigate.py         # FortiGate rule parser (rules, groups, addresses, VIPs, services)
+│       │   └── juniper.py           # Juniper Junos SRX parser (set + curly-brace; zones, address-book, apps)
 │       ├── routes/
 │       │   ├── __init__.py
 │       │   ├── api.py               # JSON API endpoints
@@ -215,6 +216,18 @@ Parses FortiGate `.conf`/`.txt` rule exports. Key functions:
 - `_analyze_rule()` — flags individual rule issues
 - `_find_duplicate_rules()` — cross-rule duplicate detection
 
+### Juniper (Junos SRX) Parser (`parsers/juniper.py`)
+
+Parses Junos SRX `.conf`/`.txt` exports in **both** formats — flat `set security ...` (`show configuration | display set`) and the nested curly-brace `show configuration` dump. The format is auto-detected. Key pieces:
+
+- `_detect_and_flatten()` — picks the format; the curly-brace form is flattened into the same `set`-style token paths so a single builder handles both
+- `_flatten_hierarchical()` / `_flatten_set()` — produce `(token_path, inactive)` leaves; honour `inactive:` / `deactivate` (→ disabled rule), `[ ... ]` value lists, and `/* */` comments
+- `_build_model()` — extracts hostname, zones, address-book (global, named, and zone-scoped), `address-set` groups, custom + term-based `applications`, `application-set` groups, and policies (zone-pair + `global`)
+- `PREDEFINED_APPS` — validated `junos-*` → (protocol, port) table used for display expansion and insecure-service detection
+- `_analyze_rule()` / `_find_duplicate_rules()` — emit the **same issue titles** as the FortiGate parser (Junos semantics: `permit` = allow; `any`/`any-ipv4`/`any-ipv6` = any address; `any` application)
+
+Junos `from-zone`/`to-zone` map onto the generic Src/Dst Zone columns; `permit`/`deny`/`reject` onto action; `then log session-*` onto the log field. Address-sets and application-sets expand recursively just like FortiGate groups.
+
 ### Group expansion
 
 Rules reference address groups and service groups by name. The parser resolves these recursively:
@@ -343,8 +356,10 @@ The rules table is fully driven by a `columns` array from `mappings.json`:
 
 | Severity | Colour | Services |
 |----------|--------|----------|
-| Bad (red) | `--status-failed` | TELNET, FTP, TFTP, HTTP, RSH, RLOGIN, FINGER, TALK, IRC |
-| Warn (orange) | `--status-unparsed` | SNMP, NFS, SMB, SAMBA, POP3, IMAP, SMTP |
+| Bad (red) | `--status-failed` | TELNET, FTP, FTP-DATA, TFTP, HTTP, RSH, RLOGIN, FINGER, TALK, IRC |
+| Warn (orange) | `--status-unparsed` | SNMP, NFS, SMB, SAMBA, POP3, IMAP, SMTP, NETBIOS |
+
+Detection (`svcSeverity` in `app.js`) is name-based and also **Juniper-aware**: the `junos-` prefix is stripped (`junos-telnet` → TELNET), and expanded `PROTO/port` values are matched against insecure/questionable port sets (e.g. `TCP/23` → insecure), so custom applications on insecure ports are also caught. The parser mirrors this in `_service_is_insecure()`.
 
 ### Row interaction
 

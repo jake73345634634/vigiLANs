@@ -50,6 +50,8 @@
 
     --tool-fortigate: #F59E0B;
     --tool-fortigate-dim: rgba(245, 158, 11, 0.12);
+    --tool-juniper: #14B8A6;
+    --tool-juniper-dim: rgba(20, 184, 166, 0.12);
     --tool-device-type: #F59E0B;
     --tool-device-type-dim: rgba(245, 158, 11, 0.12);
 
@@ -290,6 +292,11 @@ body {
 .sidebar-import-tool[data-tool="fortigate"] {
     color: var(--tool-fortigate);
     background: var(--tool-fortigate-dim);
+}
+
+.sidebar-import-tool[data-tool="juniper"] {
+    color: var(--tool-juniper);
+    background: var(--tool-juniper-dim);
 }
 
 .sidebar-import-tool.device-type-tag {
@@ -755,6 +762,11 @@ body {
 .raw-title-tool[data-tool="fortigate"] {
     color: var(--tool-fortigate);
     background: var(--tool-fortigate-dim);
+}
+
+.raw-title-tool[data-tool="juniper"] {
+    color: var(--tool-juniper);
+    background: var(--tool-juniper-dim);
 }
 
 /* Rules Table */

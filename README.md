@@ -6,7 +6,7 @@ A web app that takes the tedious out of firewall rule audits. Upload your firewa
 
 It doesn't replace your firewall management tools — it just makes auditing ACLs less soul-destroying. No more manually reviewing hundreds of rules or grepping through exports for overly permissive policies.
 
-**Currently supports:** FortiGate (`.conf`, `.txt` rule exports)
+**Currently supports:** FortiGate (`.conf`, `.txt` rule exports) and Juniper SRX / Junos (`.conf`, `.txt` — both `set` and curly-brace `show configuration` formats)
 
 ---
 
